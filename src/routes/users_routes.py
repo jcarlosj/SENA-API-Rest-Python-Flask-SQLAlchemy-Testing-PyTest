@@ -1,12 +1,11 @@
-from crypt import methods
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
 
 # Definición del BluePrint para el recurso users
 users_bp = Blueprint('users', __name__)
 
 
 @users_bp.route('', methods=['GET'])
-def get_all_users():
+def get_all_users() -> tuple[Response, int]:
     """Obtiene la lista de usuarios (Read all)"""
     return (
         jsonify({
@@ -18,7 +17,7 @@ def get_all_users():
     ) 
 
 @users_bp.route('/<int:user_id>', methods=['GET'])
-def get_user_by_id(user_id: int):
+def get_user_by_id(user_id: int) -> tuple[Response, int]:
     """Obtiene un usuario por su ID (Read one)"""
     return (
         jsonify({
@@ -32,7 +31,7 @@ def get_user_by_id(user_id: int):
     ) 
 
 @users_bp.route('', methods=['POST'])
-def create_user():
+def create_user() -> tuple[Response, int]:
     """Crea un nuevo usuario (Create)."""
 
     # request.get_json(silent=True) parsea el body a un diccionario de Python.
@@ -60,7 +59,7 @@ def create_user():
     )
 
 @users_bp.route('/<int:user_id>', methods=['PUT'])
-def update_user(user_id: int):
+def update_user(user_id: int) -> tuple[Response, int]:
     """Actualiza un usuario por su ID (Update)."""
 
     # request.get_json(silent=True) parsea el body a un diccionario de Python.
@@ -90,7 +89,7 @@ def update_user(user_id: int):
     ) 
 
 @users_bp.route('/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id: int):
+def delete_user(user_id: int) -> tuple[Response, int]:
     """Elimina un usuario por su ID (Delete)."""
     return (
         jsonify({
