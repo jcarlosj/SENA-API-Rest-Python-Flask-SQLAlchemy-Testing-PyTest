@@ -1,0 +1,24 @@
+meta {
+  name: Actualizar usuario
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:5000/api/v1/users/9
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Juan Carlos",
+    "email": "jcarlos@correo.co"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  forwardAuthorizationHeader: false
+}
