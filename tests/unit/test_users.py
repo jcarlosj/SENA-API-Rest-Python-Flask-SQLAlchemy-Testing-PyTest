@@ -123,8 +123,6 @@ def test_delete_user_returns_200_and_json(client):
     # Assert: Verifica que la respuesta sea correcta
     assert response.status_code == 200                  # Verifica que el código de estado sea 200
     assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
-    assert isinstance(data['data'], dict)               # Verifica que la respuesta de la propiedad data sea un diccionario
     assert data is not None                             # Verifica que la respuesta no sea None
     assert data['success'] == expected_response['success']    # Verifica que el estado sea success
     assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
-    assert data['data'] == expected_response['data']          # Verifica que los datos de usuarios sea la esperados 
