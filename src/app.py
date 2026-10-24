@@ -29,7 +29,20 @@ if __name__ == '__main__':
     app = create_app()                              # Crear la instancia de la aplicación (sin config de prueba)
     app.run(debug=True, port=5000, host='0.0.0.0')  # Ejecutamos la aplicación en modo debug
 
-    # kill -9 $(lsof -t -i:5000)   
-    # python src/app.py o python -m src.app
+    # Comandos a ejecutar
+
+    # python src/app.py o python -m src.app             Ejecuta la aplicacion
+    # kill -9 $(lsof -t -i:5000)                        Detiene la aplicacion si está en uso
+
+    # pytest --cov=src --cov-report=term-missing        Ejecuta las pruebas con cobertura
+    # pytest --cov=src --cov-report=html                Ejecuta las pruebas con cobertura y genera un reporte HTML
+    # La cobertura de código es una métrica porcentual que indica qué proporción de tus líneas de código fuente fueron efectivamente ejecutadas cuando corriste tu suite de pruebas automáticas.
+
+    # pytest --cov=src --cov-report=term-missing --cov-report=html
+    # Ejecuta las pruebas con cobertura y genera un reporte HTML.
+    # El reporte HTML se puede encontrar en la carpeta htmlcov
+
+    # En Linux: 
+    # "xdg-open htmlcov/index.html" o simplemente arrastra el archivo index.html a una pestaña de tu navegador
 
 

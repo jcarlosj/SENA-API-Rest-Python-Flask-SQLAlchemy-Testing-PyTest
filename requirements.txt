@@ -18,6 +18,7 @@ cffi==2.0.0
 charset-normalizer==3.4.4
 click==8.3.3
 cockpit @ file:///builddir/build/BUILD/cockpit-368-build/cockpit-368/tmp/wheel/cockpit-368-py3-none-any.whl#sha256=911acf340d515937d821f812dd539ab9ceab304f1b8e5b2ec7561b31f9c5f8f7
+coverage==7.17.0
 crypt_r==3.13.1
 cryptography==50.0.0
 cssselect==1.4.0
@@ -106,6 +107,7 @@ pyparted==3.13.0
 pyserial==3.5
 PySocks==1.7.1
 pytest==9.1.1
+pytest-cov==7.1.0
 python-augeas==1.2.0
 python-bugzilla==3.3.0
 python-dateutil==2.9.0.post0
