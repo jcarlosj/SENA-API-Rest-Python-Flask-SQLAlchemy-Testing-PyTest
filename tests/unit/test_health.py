@@ -1,5 +1,3 @@
-import pytest
-
 def test_health_checks_return_status_200(client):
     """Verifica que el endpoint /health responda con status HTTP 200 y el JSON esperado"""
     # 1. Arrange: Configuración del caso de prueba
