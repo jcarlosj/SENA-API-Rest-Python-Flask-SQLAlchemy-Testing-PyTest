@@ -88,3 +88,17 @@ def update_user(user_id: int):
         }),
         200
     ) 
+
+@users_bp.route('/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id: int):
+    """Elimina un usuario por su ID (Delete)."""
+    return (
+        jsonify({
+            'success': True,
+            'msg': f'Usuario con ID {user_id} eliminado correctamente',
+            'data': {
+                'id': user_id
+            }
+        }),
+        200
+    ) 

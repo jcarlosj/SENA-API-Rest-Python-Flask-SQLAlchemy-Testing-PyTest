@@ -1,0 +1,16 @@
+meta {
+  name: Eliminar usuario
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:5000/api/v1/users/9
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  forwardAuthorizationHeader: false
+}
