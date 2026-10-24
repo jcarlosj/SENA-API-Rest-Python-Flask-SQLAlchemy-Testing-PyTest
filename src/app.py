@@ -1,3 +1,4 @@
+from src.routes.users_routes import users_bp
 from flask import Flask, jsonify
 from typing import Any, Dict, Optional
 from src.routes.health import health_bp       # Importamos el Blueprint del módulo health
@@ -20,7 +21,8 @@ def create_app(test_config: Optional[Dict[str, Any]] = None) -> Flask:
         app.config.update(test_config)
 
     # Registro de rutas / endpoints (módulos tematicos, Blueprints)
-    app.register_blueprint(health_bp)             # Registramos el Blueprint en la aplicación
+    app.register_blueprint(health_bp)                               # Registramos el Blueprint en la aplicación
+    app.register_blueprint(users_bp, url_prefix='/api/v1/users')    # Registramos el Blueprint en la aplicación
 
     return app
 
