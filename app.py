@@ -13,7 +13,7 @@ def health_check():
     """
     return jsonify({
         "status": "ok",
-        "service": "Servidor Python para API usando Flask, funcionando correctamente!",
+        "msg": "Servidor Python para API usando Flask, funcionando correctamente!",
         "version": "1.0.0",
         "timestamp": datetime.now().isoformat()
     }), 200
