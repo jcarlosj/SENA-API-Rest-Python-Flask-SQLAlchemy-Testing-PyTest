@@ -30,3 +30,33 @@ def get_user_by_id(user_id: int):
         }),
         200
     ) 
+
+@users_bp.route('', methods=['POST'])
+def create_user():
+    """Crea un nuevo usuario (Create)."""
+
+    # request.get_json(silent=True) parsea el body a un diccionario de Python.
+    # Con silent=True evita lanzar un error 400 si el cliente no envía JSON válido, devolviendo None.
+    payload = request.get_json(silent=True)
+
+    # Validación básica de que llegó un JSON válido
+    if payload is None:
+        return jsonify({
+            'success': False,
+            'msg': 'El cuerpo de la petición debe ser un JSON válido'
+        }), 400
+    
+    # Ahora puedes acceder a los campos que envió el cliente:
+    name = payload.get('name')
+    email = payload.get('email')
+
+    return (
+        jsonify({
+            'success': True,                                # Estado de la petición
+            'msg': f"Usuario '{ name }' creado satisfactoriamente",     # Mensaje de confirmación
+            'data': payload                                 # Datos del usuario creado
+        }),
+        201,                                                # Código de estado HTTP 201 Created
+    )
+
+    
