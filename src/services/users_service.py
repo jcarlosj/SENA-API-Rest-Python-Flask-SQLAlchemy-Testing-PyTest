@@ -6,6 +6,23 @@ from src.services.exceptions import ValidationError, ConflictError, DatabaseErro
 class UserService:
     # Servicio que encapsula la lógica de negocio para la entidad User
 
+
+    @staticmethod
+    def get_all_users():
+        """
+        Obtiene todos los usuarios del sistema
+        Retorna:
+            List[User]: Lista de instancias del modelo User
+        Lanza:
+            DatabaseError: Si ocurre un error al obtener los usuarios
+        """
+        try:
+            users = User.query.all()    # 1. Obtiene todos los usuarios de la base de datos
+            return users                # 2. Retorna todos los usuarios 
+        except Exception as e:
+            raise DatabaseError(f"Error al obtener usuarios: {str(e)}", 'DB_ERROR', {'error': str(e)})     # 3. Lanza la excepción personalizada
+
+
     @staticmethod
     def create_user(data):
         """
@@ -51,4 +68,3 @@ class UserService:
             db.session.rollback()           # 4. Revierte la transacción en caso de error
             raise DatabaseError(f"Error al crear usuario: {str(e)}", 'DB_ERROR', {'error': str(e)})     # 5. Lanza la excepción personalizada
             
-        

@@ -5,14 +5,31 @@ from flask import Response, jsonify, request
 
 def get_all_users_controller() -> tuple[Response, int]:
     """Obtiene la lista de usuarios (Read all)"""
-    return (
-        jsonify({
-            'success': True,
-            'msg': 'Lista de usuarios obtenida correctamente',
-            'data': []
-        }),
-        200
-    ) 
+
+    try:
+        users = UserService.get_all_users()
+        users_list = [user.to_dict() for user in users]
+        return (
+            jsonify({
+                'success': True,
+                'msg': 'Usuarios obtenidos satisfactoriamente',
+                'data': users_list
+            }),
+            200
+        )
+    except DatabaseError as e:
+        return jsonify({
+            'success': False,
+            'msg': e.message,
+            'error': e.code,
+            'details': e.details
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'msg': 'Error al obtener usuarios',
+            'error': str(e)
+        }), 500
 
 def get_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     """Obtiene un usuario por su ID (Read one)"""
