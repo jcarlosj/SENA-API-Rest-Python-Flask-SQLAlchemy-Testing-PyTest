@@ -1,7 +1,7 @@
 from unittest.mock import ANY
 
-
-def test_create_user_returns_201_and_json(client):
+# Test: Crea un usuario con datos válidos, lo persiste en la base de datos y retorna 201
+def test_create_user_with_valid_data_persists_in_db_and_returns_201(client):
     # Arrange: Configuración del caso de prueba
     path: str = "/api/v1/users"       # Ruta del endpoint que se está probando   
     payload: dict = {
@@ -20,7 +20,8 @@ def test_create_user_returns_201_and_json(client):
             'full_name': payload['full_name'],
             'role': payload['role'],
             'user_id': ANY,                     # <-- Acepta cualquier valor generado
-            'created_at': ANY                   # <-- Acepta cualquier valor generado
+            'created_at': ANY,                  # <-- Acepta cualquier valor generado
+            'updated_at': ANY                   # <-- Acepta cualquier valor generado
         }
     }   
 
@@ -50,6 +51,7 @@ def test_create_user_returns_201_and_json(client):
     # Assert: Verificamos los campos generados por la base de datos
     assert isinstance(user_data['user_id'], int)
     assert isinstance(user_data['created_at'], str)
+    assert isinstance(user_data['updated_at'], str)
 
     # Assert: Verificamos que no se retorne la contraseña NUNCA
     assert 'password' not in user_data

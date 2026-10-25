@@ -45,6 +45,7 @@ class UserService:
         try:
             db.session.add(new_user)        # 1. Añade la instancia a la sesión 
             db.session.commit()             # 2. Confirma la transacción (persistiendo en BD)
+            
             return new_user                 # 3. Retorna la instancia creada
         except Exception as e:
             db.session.rollback()           # 4. Revierte la transacción en caso de error

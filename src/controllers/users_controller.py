@@ -57,6 +57,7 @@ def create_user_controller() -> tuple[Response, int]:
     try:
         # 1. Invocación al Servicio: Retorna un objeto User
         user = UserService.create_user(data=payload)
+        print( f'create user >>> {user.to_dict()}' )
 
         # 2. Formatear respuesta
         return (

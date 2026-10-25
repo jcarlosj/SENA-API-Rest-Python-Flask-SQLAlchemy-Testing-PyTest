@@ -14,6 +14,7 @@ class User(db.Model):
     full_name = db.Column(db.String(100), nullable=True)
     role = db.Column(db.String(20), nullable=False, default='user')
     created_at = db.Column(db.DateTime, server_default=func.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, server_default=func.now(), onupdate=func.now(), nullable=True )
 
 
     @classmethod
@@ -34,5 +35,6 @@ class User(db.Model):
             'email': self.email,
             'full_name': self.full_name,
             'role': self.role,
-            'created_at': self.created_at.isoformat() if self.created_at else None
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }
