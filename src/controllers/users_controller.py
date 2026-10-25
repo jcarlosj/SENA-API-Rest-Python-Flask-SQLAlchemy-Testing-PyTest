@@ -1,4 +1,4 @@
-from src.services.exceptions import ConflictError, ValidationError, DatabaseError
+from src.services.exceptions import ConflictError, ValidationError, DatabaseError, NotFoundError
 from src.services.users_service import UserService
 from flask import Response, jsonify, request
 
@@ -121,27 +121,42 @@ def update_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     # Con silent=True evita lanzar un error 400 si el cliente no envía JSON válido, devolviendo None.
     payload = request.get_json(silent=True)
 
-    if payload is None:
-        return jsonify({
-            'success': False,
-            'msg': 'El cuerpo de la petición debe ser un JSON válido'
-        }), 400
+    if not isinstance(payload, dict):
+        return (
+            jsonify({
+                "status": "error",
+                "msg": "El cuerpo de la petición debe ser un objeto JSON válido.",
+            }),
+            400,
+        )
 
-    name = payload.get('name')
-    email = payload.get('email')
-
-    return (
-        jsonify({
-            'success': True,
-            'msg': f'Usuario con ID {user_id} actualizado correctamente',
-            'data': {
-                'id': user_id,
-                'name': name,
-                'email': email
-            }
-        }),
-        200
-    ) 
+    try:
+        updated_user = UserService.update_user(user_id, payload)
+        return (
+            jsonify({
+                "success": True,
+                "msg": f"Usuario con ID {user_id} actualizado correctamente",
+                "data": updated_user.to_dict(),
+            }),
+            200,
+        )
+    except NotFoundError as err:
+        return jsonify({"success": False, "msg": err.message, "error": err.code, "details": err.details}), 404
+    except ValidationError as err:
+        return jsonify({"success": False, "msg": err.message, "error": err.code, "details": err.details}), 400
+    except ConflictError as err:
+        return jsonify({"success": False, "msg": err.message, "error": err.code, "details": err.details}), 409
+    except DatabaseError as err:
+        return jsonify({"success": False, "msg": err.message, "error": err.code, "details": err.details}), 500
+    except Exception as e:
+        return (
+            jsonify({
+                "success": False,
+                "msg": "Ocurrió un error inesperado al actualizar el usuario.",
+                "error": str(e)
+            }),
+            500,
+        )
 
 def delete_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     """Elimina un usuario por su ID (Delete)."""

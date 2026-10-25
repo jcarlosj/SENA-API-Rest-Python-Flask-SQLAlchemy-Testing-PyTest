@@ -138,3 +138,75 @@ def test_create_user_with_valid_data_persists_in_db_and_returns_201(client):
 
     # Assert: Verificamos que no se retorne la contraseña NUNCA
     assert 'password' not in user_data
+
+
+# Test: Actualiza un usuario existente con datos válidos, persiste los cambios y retorna 200
+def test_update_user_with_valid_data_persists_in_db_and_returns_200(client):
+    # Arrange: Configuración del caso de prueba
+    # 1. Creamos primero un usuario en la base de datos
+    create_payload = {
+        'username': 'marta',
+        'email': 'marta@correo.co',
+        'password': 'password123',
+        'full_name': 'Marta Ruiz',
+        'role': 'user'
+    }
+    create_response = client.post("/api/v1/users", json=create_payload)
+    created_user = create_response.get_json()['data']
+    user_id = created_user['user_id']
+
+    # 2. Definimos la ruta con el ID del usuario creado y los datos a actualizar
+    path: str = f"/api/v1/users/{user_id}"
+    update_payload = {
+        'username': 'malubazalar',
+        'email': 'malubazalar@correo.co',
+        'full_name': 'Maria Luisa Bazalar',
+        'role': 'admin'
+    }
+    expected_response = {
+        'success': True,
+        'msg': f"Usuario con ID {user_id} actualizado correctamente",
+        'data': {
+            'username': update_payload['username'],
+            'email': update_payload['email'],
+            'full_name': update_payload['full_name'],
+            'role': update_payload['role'],
+            'user_id': user_id,
+            'created_at': ANY,
+            'updated_at': ANY
+        }
+    }
+
+    # Act: Realiza la petición HTTP PUT a /api/v1/users/<id>
+    response = client.put(path, json=update_payload)
+    data = response.get_json()
+
+    # Assert: Verifica que la respuesta sea correcta
+    assert response.status_code == 200                  # Verifica que el código de estado sea 200 OK
+    assert data['success'] is True                      # Verifica que el estado sea success
+    assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
+    assert isinstance(data['data'], dict)               # Verifica que la respuesta de la propiedad data sea un diccionario
+    assert data is not None                             # Verifica que la respuesta no sea None
+    assert data == expected_response                    # Verifica que la respuesta coincida con la esperada
+
+    # Assert: Verificamos los datos retornados
+    user_data = data['data']                            # Obtiene la propiedad data de la respuesta
+
+    assert data['success'] == expected_response['success']    # Verifica que el estado sea success
+    assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
+
+    # Assert: Verificamos los datos retornados de data coincidan con los actualizados
+    assert user_data['username'] == update_payload['username']
+    assert user_data['email'] == update_payload['email']
+    assert user_data['full_name'] == update_payload['full_name']
+    assert user_data['role'] == update_payload['role']
+
+    # Assert: Verificamos los campos generados por la base de datos
+    assert user_data['user_id'] == user_id
+    assert isinstance(user_data['user_id'], int)
+    assert isinstance(user_data['created_at'], str)
+    assert isinstance(user_data['updated_at'], str)
+
+    # Assert: Verificamos que no se retorne la contraseña NUNCA
+    assert 'password' not in user_data
+

@@ -17,3 +17,7 @@ class ConflictError(AppError):
 class DatabaseError(AppError):
     def __init__(self, message, code='DB_ERROR', details=None):
         super().__init__(message, code, details)
+
+class NotFoundError(AppError):
+    def __init__(self, message, code='NOT_FOUND', details=None):
+        super().__init__(message, code, details)

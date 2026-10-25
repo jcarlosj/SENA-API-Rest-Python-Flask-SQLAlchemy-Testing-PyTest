@@ -1,6 +1,6 @@
 from src.models.user_model import User
 from src.models import db
-from src.services.exceptions import ValidationError, ConflictError, DatabaseError
+from src.services.exceptions import ValidationError, ConflictError, DatabaseError, NotFoundError
 
 
 class UserService:
@@ -68,3 +68,71 @@ class UserService:
             db.session.rollback()           # 4. Revierte la transacción en caso de error
             raise DatabaseError(f"Error al crear usuario: {str(e)}", 'DB_ERROR', {'error': str(e)})     # 5. Lanza la excepción personalizada
             
+    @staticmethod
+    def update_user(user_id: int, data: dict) -> User:
+        """
+        Actualiza un usuario en el sistema
+        Retorna:
+            User: Instancia actualizada del usuario
+        Lanza:
+            ValidationError: Si faltan campos obligatorios
+            ConflictError: Si el username o el email ya existen
+            DatabaseError: Si ocurre un error al persistir en base de datos
+            NotFoundError: Si el usuario no existe
+        """
+        # 1. Verificar existencia
+        user = db.session.get(User, user_id)
+        if not user:
+            raise NotFoundError("Usuario no encontrado", 'USER_NOT_FOUND', {'user_id': user_id})
+        
+        # 2. Extraer y verificar que venga al menos un campo
+        new_username = data.get('username')
+        new_email = data.get('email')
+
+        if new_username is None and new_email is None:
+            raise ValidationError("Debe proporcionar al menos un campo ('username' o 'email') para actualizar")
+
+        # 3. Validar y verificar colisiones de username
+        if( new_username is not None ):
+            new_username = new_username.strip() if isinstance( new_username, str) else ""
+            if not new_username:
+                raise ValidationError("El username no puede estar vacío", 'INVALID_USERNAME', {'username': new_username})
+            
+            # Verificar colisión de username
+            existing_user_by_username = User.query.filter_by(username=new_username).first()
+            if existing_user_by_username and existing_user_by_username.user_id != user_id:
+                raise ConflictError("El username ya existe", 'USER_ALREADY_EXISTS', {'username': new_username})
+            
+        # 4. Validar y verificar colisiones de email
+        if( new_email is not None ):
+            new_email = new_email.strip() if isinstance( new_email, str) else ""
+            if not new_email:
+                raise ValidationError("El email no puede estar vacío", 'INVALID_EMAIL', {'email': new_email})
+            
+            # Verificar colisión de email
+            existing_user_by_email = User.query.filter_by(email=new_email).first()
+            if existing_user_by_email and existing_user_by_email.user_id != user_id:
+                raise ConflictError("El email ya existe", 'EMAIL_ALREADY_EXISTS', {'email': new_email})
+            
+        # 5. Actualizar campos si vienen en el payload
+        if new_username is not None:
+            user.username = new_username
+        if new_email is not None:
+            user.email = new_email
+        
+        if data.get('password') is not None:
+            user.password = data.get('password')
+        
+        if data.get('full_name') is not None:
+            user.full_name = data.get('full_name').strip() if isinstance(data.get('full_name'), str) else None
+        
+        if data.get('role') is not None:
+            user.role = data.get('role').strip().lower() if isinstance(data.get('role'), str) else 'user'
+            
+        # 6. Persistir cambios en BD
+        try:
+            db.session.commit()
+            return user
+        except Exception as e:
+            db.session.rollback()
+            raise DatabaseError(f"Error al actualizar usuario: {str(e)}", 'DB_ERROR', {'error': str(e)})

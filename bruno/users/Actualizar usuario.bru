@@ -5,15 +5,18 @@ meta {
 }
 
 put {
-  url: http://localhost:5000/api/v1/users/9
+  url: http://localhost:5000/api/v1/users/1
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "name": "Juan Carlos",
-    "email": "jcarlos@correo.co"
+  //   "username": "jpuerta",
+    "email": "julipuertavj@correo.co",
+  //   "password": "123456789",
+    "full_name": "Juliana Puerta Villada",
+    "role": "admin" // Default: user
   }
 }
 
