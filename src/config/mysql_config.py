@@ -34,9 +34,13 @@ def verify_database_connection(uri: str) -> bool:
     try:
         from sqlalchemy import create_engine, text
 
+        # Crear motor de conexión
         engine = create_engine(uri)
+
+        # Verificar conexión
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
+            
         print("\033[92m✔ Conexión a la base de datos MySQL establecida con éxito.\033[0m")
         return True
     except Exception as error:

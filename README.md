@@ -1,4 +1,4 @@
-# API Backend con Flask y Testing
+# API Backend con Flask y Testing 
 
 Backend desarrollado en Python con Flask siguiendo el patrón de arquitectura **Application Factory** y **Blueprints**, con configuración para base de datos MySQL (SQLAlchemy) y suite de pruebas unitarias automáticas con métricas de cobertura en Pytest.
 
@@ -46,6 +46,21 @@ Con el entorno virtual activado:
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+#### 📦 Tabla de Dependencias del Proyecto
+
+| Dependencia | Comando de Instalación | Tipo | ¿Para qué se usa en el proyecto? |
+| :--- | :--- | :--- | :--- |
+| **`Flask`** | `pip install Flask` | Núcleo | Framework web principal. Gestiona las rutas (Blueprints), peticiones HTTP, respuestas JSON y ciclo de vida de la API. |
+| **`python-dotenv`** | `pip install python-dotenv` | Configuración | Carga automáticamente las variables de entorno desde el archivo `.env` al sistema (`os.getenv`), como credenciales de base de datos y puertos. |
+| **`SQLAlchemy`** | `pip install SQLAlchemy` | Base de Datos | ORM y Toolkit SQL. Crea motores de conexión (`create_engine`), ejecuta consultas y abstrae la comunicación con la base de datos. |
+| **`PyMySQL`** | `pip install PyMySQL` | Driver de BD | Conector/driver en Python puro para MySQL. Permite a SQLAlchemy dialogar con servidores MySQL/MariaDB (`mysql+pymysql://...`). |
+| **`cryptography`** | `pip install cryptography` | Seguridad | Requerido por PyMySQL para autenticación segura moderna (método `caching_sha2_password` estándar en MySQL 8+). |
+| **`pytest`** | `pip install pytest` | Testing | Framework para escribir y ejecutar pruebas unitarias automáticas de endpoints y funciones. |
+| **`pytest-cov`** | `pip install pytest-cov` | Testing | Extensión de Pytest que calcula métricas de cobertura de código (porcentaje de líneas evaluadas) y genera reportes en terminal y HTML. |
+
+> **Nota:** Librerías como `Werkzeug`, `Jinja2`, `click`, `coverage` o `blinker` son instaladas automáticamente por pip como subdependencias de las anteriores.
+
 
 ---
 

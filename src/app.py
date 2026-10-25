@@ -41,8 +41,17 @@ if __name__ == '__main__':
 
     # Comandos a ejecutar
 
-    # python src/app.py o python -m src.app             Ejecuta la aplicacion
+    # python src/app.py                                 Ejecuta la aplicacion
+    # python -m src.app                                 Ejecuta la aplicacion
     # kill -9 $(lsof -t -i:5000)                        Detiene la aplicacion si está en uso
+
+    # pip install SQLAlchemy pymysql cryptography pytest pytest-cov
+
+    # pip3 install -r requirements.txt                  Instala las dependencias del proyecto
+    # pip freeze > requirements.txt                     Actualiza el archivo requirements.txt con las dependencias instaladas
+    # flask run                                         Ejecuta la aplicacion
+    # flask --app src.app run --debug                   Ejecuta la aplicacion en modo debug
+    # flask --app src.app run --host=[IP_ADDRESS] --port=5000    Ejecuta la aplicacion en modo debug
 
     # pytest --cov=src --cov-report=term-missing        Ejecuta las pruebas con cobertura
     # pytest --cov=src --cov-report=html                Ejecuta las pruebas con cobertura y genera un reporte HTML
