@@ -10,3 +10,6 @@ __pycache__/
 # Reportes de cobertura
 .coverage
 htmlcov/
+
+# Variables de entorno
+.env
