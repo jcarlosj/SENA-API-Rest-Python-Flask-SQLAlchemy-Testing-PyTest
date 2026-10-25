@@ -52,6 +52,7 @@ pip install -r requirements.txt
 | Dependencia | Comando de Instalación | Tipo | ¿Para qué se usa en el proyecto? |
 | :--- | :--- | :--- | :--- |
 | **`Flask`** | `pip install Flask` | Núcleo | Framework web principal. Gestiona las rutas (Blueprints), peticiones HTTP, respuestas JSON y ciclo de vida de la API. |
+| **`Flask-SQLAlchemy`** | `pip install Flask-SQLAlchemy` | Extensión BD | Extensión oficial que integra SQLAlchemy con Flask, permitiendo usar `db.Model`, `db.init_app(app)` y `db.create_all()`. |
 | **`python-dotenv`** | `pip install python-dotenv` | Configuración | Carga automáticamente las variables de entorno desde el archivo `.env` al sistema (`os.getenv`), como credenciales de base de datos y puertos. |
 | **`SQLAlchemy`** | `pip install SQLAlchemy` | Base de Datos | ORM y Toolkit SQL. Crea motores de conexión (`create_engine`), ejecuta consultas y abstrae la comunicación con la base de datos. |
 | **`PyMySQL`** | `pip install PyMySQL` | Driver de BD | Conector/driver en Python puro para MySQL. Permite a SQLAlchemy dialogar con servidores MySQL/MariaDB (`mysql+pymysql://...`). |
