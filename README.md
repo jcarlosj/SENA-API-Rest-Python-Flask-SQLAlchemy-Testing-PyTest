@@ -142,12 +142,15 @@ BackEnd/
 │   └── mysql_setup_guide.md   # Guía paso a paso para configurar MySQL
 ├── src/                       # Código fuente de la aplicación
 │   ├── config/                # Módulos de configuración (MySQL, variables .env)
-│   ├── controllers/           # Lógica de negocio de cada recurso
+│   ├── controllers/           # Lógica de peticiones y respuestas HTTP
+│   ├── models/                # Modelos ORM (SQLAlchemy)
 │   ├── routes/                # Blueprints y definiciones de endpoints
+│   ├── services/              # Lógica de negocio y excepciones
 │   └── app.py                 # Application Factory (create_app) y entrypoint
 ├── tests/                     # Suite de pruebas automáticas
 │   ├── conftest.py            # Fixtures compartidos de Pytest (app, client)
-│   └── unit/                  # Pruebas unitarias (test_health, test_users)
+│   ├── unit/                  # Pruebas unitarias aisladas
+│   └── integration/           # Pruebas de integración (endpoints + DB)
 ├── bruno/                     # Colección de peticiones HTTP en Bruno
 ├── .env.example               # Plantilla de variables de entorno
 ├── pytest.ini                 # Configuración de Pytest y pytest-cov

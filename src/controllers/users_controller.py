@@ -1,3 +1,5 @@
+from src.services.exceptions import ConflictError, ValidationError, DatabaseError
+from src.services.users_service import UserService
 from flask import Response, jsonify, request
 
 
@@ -26,31 +28,73 @@ def get_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     ) 
 
 def create_user_controller() -> tuple[Response, int]:
-    """Crea un nuevo usuario (Create)."""
+    """
+        Crea un nuevo usuario (Create).
+        Recibe peticion HTTP, delega al servicio y formatea la respuesta HTTP
+    """
 
     # request.get_json(silent=True) parsea el body a un diccionario de Python.
     # Con silent=True evita lanzar un error 400 si el cliente no envía JSON válido, devolviendo None.
     payload = request.get_json(silent=True)
 
-    # Validación básica de que llegó un JSON válido
+    # Validar que llega un JSON válido
     if payload is None:
         return jsonify({
             'success': False,
             'msg': 'El cuerpo de la petición debe ser un JSON válido'
         }), 400
-    
-    # Ahora puedes acceder a los campos que envió el cliente:
-    name = payload.get('name')
-    email = payload.get('email')
 
-    return (
-        jsonify({
-            'success': True,                                # Estado de la petición
-            'msg': f"Usuario '{ name }' creado satisfactoriamente",     # Mensaje de confirmación
-            'data': payload                                 # Datos del usuario creado
-        }),
-        201,                                                # Código de estado HTTP 201 Created
-    )
+    # Validar de que el payload sea un diccionario     
+    if not isinstance( payload, dict ):
+        return(
+            jsonify({
+                'success': False,
+                'msg': 'El cuerpo de la petición debe ser un JSON válido'
+            }),
+            400
+        )
+
+    try:
+        # 1. Invocación al Servicio: Retorna un objeto User
+        user = UserService.create_user(data=payload)
+
+        # 2. Formatear respuesta
+        return (
+            jsonify({
+                'success': True,
+                'msg': f"Usuario creado satisfactoriamente",
+                'data': user.to_dict()
+            }),
+            201
+        )
+    except ValidationError as e:
+        return jsonify({
+            'success': False,
+            'msg': e.message,
+            'error': e.code,
+            'details': e.details
+        }), 400
+    except ConflictError as e:
+        return jsonify({
+            'success': False,
+            'msg': e.message,
+            'error': e.code,
+            'details': e.details
+        }), 409
+    except DatabaseError as e:
+        return jsonify({
+            'success': False,
+            'msg': e.message,
+            'error': e.code,
+            'details': e.details
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'msg': 'Error al crear usuario',
+            'error': str(e)
+        }), 500
+        
 
 def update_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     """Actualiza un usuario por su ID (Update)."""

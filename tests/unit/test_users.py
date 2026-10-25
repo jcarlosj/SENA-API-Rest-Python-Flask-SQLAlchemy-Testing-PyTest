@@ -1,3 +1,7 @@
+from typing import AnyStr
+from unittest.mock import ANY
+
+
 def test_get_all_users_returs_200_and_json(client):
     # Arrage: Configuración del caso de prueba
     path: str = "/api/v1/users"       # Ruta del endpoint que se está probando    
@@ -45,33 +49,6 @@ def test_get_user_by_id_returns_200_and_json(client):
     assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
     assert data['data'] == expected_response['data']          # Verifica que los datos de usuarios sea la esperados
 
-def test_create_user_returns_201_and_json(client):
-    # Arrange: Configuración del caso de prueba
-    path: str = f"/api/v1/users"       # Ruta del endpoint que se está probando    
-    payload: dict = {
-        'name': 'Juan Carlos',
-        'email': 'jcarlos@correo.co'
-    }
-    expected_response = {
-        'success': True,
-        'msg': f"Usuario '{payload['name']}' creado satisfactoriamente",
-        'data': payload
-    }   
-
-    # Act: Realiza la petición HTTP POST a /api/v1/users
-    response = client.post(path, json=payload)          # Obtiene la respuesta de la petición GET
-    data = response.get_json()                          # Obtiene el JSON de la respuesta
-
-    # Assert: Verifica que la respuesta sea correcta
-    assert response.status_code == 201                  # Verifica que el código de estado sea 200
-    assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
-    assert isinstance(data['data'], dict)               # Verifica que la respuesta de la propiedad data sea un diccionario
-    assert data is not None                             # Verifica que la respuesta no sea None
-    assert data['success'] == expected_response['success']    # Verifica que el estado sea success
-    assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
-    assert data['data'] == expected_response['data']          # Verifica que los datos de usuarios sea la esperados
-
-
 def test_update_user_returns_200_and_json(client):
     # Arrage: Configuración del caso de prueba
     user_id: int = 2    # ID del usuario que se está probando
@@ -102,7 +79,6 @@ def test_update_user_returns_200_and_json(client):
     assert data['success'] == expected_response['success']    # Verifica que el estado sea success
     assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
     assert data['data'] == expected_response['data']          # Verifica que los datos de usuarios sea la esperados 
-
 
 def test_delete_user_returns_200_and_json(client):
     # Arrage: Configuración del caso de prueba
