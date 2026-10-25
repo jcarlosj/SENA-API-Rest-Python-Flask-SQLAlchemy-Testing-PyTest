@@ -45,7 +45,8 @@ if __name__ == '__main__':
 
     # Crea automáticamente las tablas en MySQL si aún no existen
     with app.app_context():
-        db.create_all()                             # Crea todas las tablas definidas en los modelos
+        from src.models.user_model import User
+        User.create_table()                         # Verifica y crea la tabla 'users' emitiendo mensaje
 
     # Ejecutamos la aplicación en modo debug
     app.run(debug=True, port=5000, host='0.0.0.0')  
