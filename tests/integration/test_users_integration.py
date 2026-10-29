@@ -313,3 +313,76 @@ def test_delete_user_with_valid_id_deletes_from_db_and_returns_200(client):
     assert len(all_users) == 1
 
 
+# Test: Obtiene un usuario existente por su ID, retorna sus datos completos y responde 200
+def test_get_user_by_id_when_user_exists_returns_200_and_user_data(client):
+    # Arrange: Configuración del caso de prueba
+    # 1. Creamos un usuario en la base de datos para consultar posteriormente
+    payload: dict = {
+        'username': 'sofia',
+        'email': 'sofia.castillo@correo.co',
+        'password': 'password123',
+        'full_name': 'Sofia Castillo',
+        'role': 'user'
+    }
+    create_response = client.post("/api/v1/users", json=payload)
+    created_user = create_response.get_json()['data']
+    user_id = created_user['user_id']
+
+    # 2. Definimos la ruta con el ID del usuario creado y la respuesta esperada
+    path: str = f"/api/v1/users/{user_id}"
+    expected_response = {
+        'success': True,
+        'msg': f"Usuario con ID {user_id} obtenido correctamente",
+        'data': {
+            'username': payload['username'],
+            'email': payload['email'],
+            'full_name': payload['full_name'],
+            'role': payload['role'],
+            'user_id': user_id,
+            'created_at': ANY,
+            'updated_at': ANY
+        }
+    }
+
+    # Act: Realiza la petición HTTP GET a /api/v1/users/<id>
+    response = client.get(path)
+    data = response.get_json()
+
+    # Assert: Verifica que la respuesta HTTP sea correcta
+    assert response.status_code == 200                  # Verifica que el código de estado sea 200 OK
+    assert data['success'] is True                      # Verifica que el estado sea success
+    assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
+    assert isinstance(data['data'], dict)               # Verifica que la respuesta de la propiedad data sea un diccionario
+    assert data is not None                             # Verifica que la respuesta no sea None
+    assert data == expected_response                    # Verifica que la respuesta coincida con la esperada
+
+    # Assert: Verificamos los datos retornados de la cabecera
+    assert data['success'] == expected_response['success']    # Verifica que el estado sea success
+    assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
+
+    # Assert: Verificamos los datos del usuario obtenido
+    user_data = data['data']
+    assert user_data['username'] == payload['username']
+    assert user_data['email'] == payload['email']
+    assert user_data['full_name'] == payload['full_name']
+    assert user_data['role'] == payload['role']
+
+    # Assert: Verificamos los campos generados por la base de datos y sus tipos
+    assert user_data['user_id'] == user_id
+    assert isinstance(user_data['user_id'], int)
+    assert isinstance(user_data['username'], str)
+    assert isinstance(user_data['email'], str)
+    assert isinstance(user_data['full_name'], str)
+    assert isinstance(user_data['role'], str)
+    assert isinstance(user_data['created_at'], str)
+    assert isinstance(user_data['updated_at'], str)
+
+    # Assert: Verificamos consistencia con las marcas temporales creadas
+    assert user_data['created_at'] == created_user['created_at']
+    assert user_data['updated_at'] == created_user['updated_at']
+
+    # Assert: Verificamos que no se retorne la contraseña NUNCA
+    assert 'password' not in user_data
+
+
+

@@ -13,10 +13,10 @@ Cada ítem cuenta con su respectiva casilla de verificación:
 | Métrica | Valor Actual |
 | :--- | :--- |
 | **Pruebas Totales Identificadas** | 62 |
-| **Pruebas Implementadas y Exitosas (`[x]`)** | 14 |
-| **Pruebas Pendientes (`[ ]`)** | 48 |
-| **Porcentaje de Cobertura de Código (`pytest-cov`)** | 71% |
-| **Estado de la Suite (`pytest`)** | 17 Passed (100% de las pruebas existentes pasan) |
+| **Pruebas Implementadas y Exitosas (`[x]`)** | 16 |
+| **Pruebas Pendientes (`[ ]`)** | 46 |
+| **Porcentaje de Cobertura de Código (`pytest-cov`)** | 69% |
+| **Estado de la Suite (`pytest`)** | 19 Passed (100% de las pruebas existentes pasan) |
 | **Motor de BD en Pruebas** | SQLite en memoria (`sqlite:///:memory:`) vía fixture en `tests/conftest.py` |
 
 ---
@@ -34,7 +34,8 @@ Valida el estado operativo de la API, versión y timestamp del sistema.
   *Referencia:* `tests/unit/test_health.py::test_health_returns_expected_fields`
 - [x] **Otros métodos HTTP no permitidos:** Validar que peticiones `PUT`, `DELETE` y `PATCH` sobre `/health` retornen 405 Method Not Allowed.  
   *Referencia:* `tests/unit/test_health.py::test_health_unsupported_methods_return_405`
-- [ ] **Formato de marca temporal (timestamp):** Validar que el campo `timestamp` corresponda a una cadena en formato ISO 8601 válido y parseable.
+- [x] **Formato de marca temporal (timestamp):** Validar que el campo `timestamp` corresponda a una cadena en formato ISO 8601 válido y parseable.  
+  *Referencia:* `tests/unit/test_health.py::test_health_timestamp_is_valid_iso8601`
 - [ ] **Formato de versión:** Validar que el campo `version` cumpla con formato semántico (ej. `"1.0.0"`).
 - [ ] **Cabeceras de respuesta:** Validar que la cabecera `Content-Type` sea `application/json`.
 
@@ -123,16 +124,11 @@ Garantiza el correcto registro de Blueprints, manejo de errores de rutas y Appli
 
 ### 3.4 Obtener Usuario por ID (`GET /api/v1/users/<id>`)
 
-> [!NOTE]
-> **Estado de la funcionalidad en el código:**  
-> El controlador `get_user_by_id_controller` está actualmente implementado como un **stub/mock** que devuelve datos fijos sin consultar la base de datos ni invocar a `UserService`. La prueba unitaria existente valida únicamente la respuesta mockeada actual.
-
-#### Pruebas Unitarias (Estado Actual)
-- [x] **Respuesta simulada con status 200:** Verifica que el endpoint retorne HTTP 200 y el JSON mock con `{'id': user_id}`.  
+#### Pruebas de Integración y Servicio
+- [x] **Consulta exitosa de usuario existente en BD (200 OK):** Consultar un usuario persistido y validar que devuelva su objeto completo sin `password`.  
+  *Referencia:* `tests/integration/test_users_integration.py::test_get_user_by_id_when_user_exists_returns_200_and_user_data`
+- [x] **Respuesta con status 200 y validación de datos:** Verifica que el endpoint retorne HTTP 200 y los datos completos del usuario consultado.  
   *Referencia:* `tests/unit/test_users.py::test_get_user_by_id_returns_200_and_json`
-
-#### Pruebas de Integración y Servicio (Pendientes de implementar funcionalidad completa)
-- [ ] **Consulta exitosa de usuario existente en BD (200 OK):** Consultar un usuario persistido y validar que devuelva su objeto completo sin `password`.
 - [ ] **Usuario inexistente (404 Not Found):** Consultar un ID que no exista y verificar respuesta 404 con código `USER_NOT_FOUND`.
 - [ ] **ID de usuario inválido en URL (404 Not Found):** Enviar ID alfanumérico en ruta y verificar rechazo por Flask.
 - [ ] **Manejo de errores de base de datos (500 Internal Server Error):** Validar respuesta ante fallo de conexión o consulta en base de datos.
@@ -234,18 +230,18 @@ Pruebas sobre la configuración de conexión y función de verificación ping.
 
 | Módulo / Componente | Tipo de Prueba | Pruebas Implementadas `[x]` | Pruebas Pendientes `[ ]` | Total Identificadas | Estado de Cobertura Actual |
 | :--- | :--- | :---: | :---: | :---: | :--- |
-| **Health Check (`/health`)** | Unitaria / Integración | 5 | 3 | 8 | 100% de líneas de `health.py` cubiertas |
+| **Health Check (`/health`)** | Unitaria / Integración | 6 | 2 | 8 | 100% de líneas de `health.py` cubiertas |
 | **Enrutamiento y App (`app.py`)** | Integración | 2 | 3 | 5 | 74% de líneas cubiertas |
 | **Usuarios: Listar (`GET /users`)** | Integración / Unitaria | 2 | 3 | 5 | Parcialmente cubierto |
 | **Usuarios: Crear (`POST /users`)** | Integración / Unitaria | 1 | 11 | 12 | Flujo exitoso cubierto; validaciones pendientes |
 | **Usuarios: Actualizar (`PUT /users/<id>`)** | Integración / Unitaria | 1 | 11 | 12 | Flujo exitoso cubierto; validaciones pendientes |
-| **Usuarios: Consultar ID (`GET /users/<id>`)** | Unitaria (Mock) / Integración | 1 | 4 | 5 | Mock cubierto; lógica real y BD pendiente |
+| **Usuarios: Consultar ID (`GET /users/<id>`)** | Unitaria / Integración | 2 | 3 | 5 | Funcionalidad completa y persistente |
 | **Usuarios: Eliminar (`DELETE /users/<id>`)** | Unitaria / Integración | 2 | 4 | 6 | Funcionalidad completa y persistente |
 | **Servicio de Usuarios (`UserService`)** | Unitaria (Mocks) | 0 | 14 | 14 | No existen pruebas unitarias puras del servicio |
 | **Modelo ORM (`User`)** | Unitaria / Integración | 0 | 10 | 10 | Cubierto indirectamente por integración |
 | **Excepciones (`exceptions.py`)** | Unitaria | 0 | 5 | 5 | Instanciación probada solo en flujos |
 | **Configuración MySQL (`mysql_config.py`)** | Unitaria | 0 | 4 | 4 | 57% de líneas cubiertas |
-| **TOTALES** | | **14** | **48** | **62** | **71% Cobertura Global** |
+| **TOTALES** | | **16** | **46** | **62** | **69% Cobertura Global** |
 
 ---
 

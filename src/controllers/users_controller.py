@@ -32,17 +32,46 @@ def get_all_users_controller() -> tuple[Response, int]:
         }), 500
 
 def get_user_by_id_controller(user_id: int) -> tuple[Response, int]:
-    """Obtiene un usuario por su ID (Read one)"""
-    return (
-        jsonify({
-            'success': True,
-            'msg': f'Usuario con ID {user_id} obtenido correctamente',
-            'data': {
-                'id': user_id
-            }
-        }),
-        200
-    ) 
+    """Obtiene un usuario por su ID (Read one)."""
+    try:
+        user = UserService.get_user_by_id(user_id)
+        return (
+            jsonify({
+                'success': True,
+                'msg': f'Usuario con ID {user_id} obtenido correctamente',
+                'data': user.to_dict()
+            }),
+            200
+        )
+    except NotFoundError as err:
+        return (
+            jsonify({
+                'success': False,
+                'msg': err.message,
+                'error': err.code,
+                'details': err.details
+            }),
+            404
+        )
+    except DatabaseError as err:
+        return (
+            jsonify({
+                'success': False,
+                'msg': err.message,
+                'error': err.code,
+                'details': err.details
+            }),
+            500
+        )
+    except Exception as e:
+        return (
+            jsonify({
+                'success': False,
+                'msg': 'Ocurrió un error inesperado al obtener el usuario.',
+                'error': str(e)
+            }),
+            500
+        )
 
 def create_user_controller() -> tuple[Response, int]:
     """

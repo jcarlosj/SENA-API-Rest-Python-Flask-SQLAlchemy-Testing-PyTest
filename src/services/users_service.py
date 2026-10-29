@@ -22,6 +22,27 @@ class UserService:
         except Exception as e:
             raise DatabaseError(f"Error al obtener usuarios: {str(e)}", 'DB_ERROR', {'error': str(e)})     # 3. Lanza la excepción personalizada
 
+    @staticmethod
+    def get_user_by_id(user_id: int) -> User:
+        """
+        Obtiene un usuario por su ID
+        Retorna:
+            User: Instancia del modelo User
+        Lanza:
+            NotFoundError: Si el usuario no existe
+            DatabaseError: Si ocurre un error de base de datos
+        """
+        try:
+            user = db.session.get(User, user_id)
+        except Exception as e:
+            raise DatabaseError(f"Error al obtener usuario por ID: {str(e)}", 'DB_ERROR', {'error': str(e)})
+
+        if not user:
+            raise NotFoundError("Usuario no encontrado", 'USER_NOT_FOUND', {'user_id': user_id})
+
+        return user
+
+
 
     @staticmethod
     def create_user(data):

@@ -1,3 +1,4 @@
+from datetime import datetime
 import pytest
 
 
@@ -66,3 +67,29 @@ def test_health_unsupported_methods_return_405(client, http_method):
 
     # 3. Assert: Verifica que la respuesta sea 405 Method Not Allowed
     assert response.status_code == 405                  # Verifica que el código de estado sea 405
+
+
+def test_health_timestamp_is_valid_iso8601(client):
+    """Verifica que el campo 'timestamp' de /health sea una cadena con formato ISO 8601 válido y parseable."""
+    # 1. Arrange: Configuración del caso de prueba
+    path: str = "/health"
+
+    # 2. Act: Realiza la petición HTTP GET a /health
+    response = client.get(path)
+    data = response.get_json()
+
+    # 3. Assert: Verifica existencia, tipo y formato ISO 8601 parseable
+    assert response.status_code == 200                  # Verifica código HTTP 200
+    assert data is not None                             # Verifica que la respuesta no sea None
+    assert isinstance(data, dict)                       # Verifica que sea un diccionario JSON
+    assert "timestamp" in data                          # Verifica que exista el campo 'timestamp'
+    assert isinstance(data["timestamp"], str)           # Verifica que sea una cadena de texto
+    assert len(data["timestamp"].strip()) > 0           # Verifica que no esté vacía
+
+    timestamp_str = data["timestamp"]
+    try:
+        parsed_datetime = datetime.fromisoformat(timestamp_str)
+    except ValueError:
+        pytest.fail(f"El campo 'timestamp' no tiene un formato ISO 8601 válido: '{timestamp_str}'")
+
+    assert isinstance(parsed_datetime, datetime)        # Confirma que se parseó exitosamente a datetime
