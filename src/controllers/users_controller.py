@@ -160,10 +160,42 @@ def update_user_by_id_controller(user_id: int) -> tuple[Response, int]:
 
 def delete_user_by_id_controller(user_id: int) -> tuple[Response, int]:
     """Elimina un usuario por su ID (Delete)."""
-    return (
-        jsonify({
-            'success': True,
-            'msg': f'Usuario con ID {user_id} eliminado correctamente'
-        }),
-        200
-    )   
+    try:
+        deleted_user = UserService.delete_user(user_id)
+        return (
+            jsonify({
+                'success': True,
+                'msg': f'Usuario con ID {user_id} eliminado correctamente',
+                'data': deleted_user.to_dict()
+            }),
+            200
+        )
+    except NotFoundError as err:
+        return (
+            jsonify({
+                'success': False,
+                'msg': err.message,
+                'error': err.code,
+                'details': err.details
+            }),
+            404
+        )
+    except DatabaseError as err:
+        return (
+            jsonify({
+                'success': False,
+                'msg': err.message,
+                'error': err.code,
+                'details': err.details
+            }),
+            500
+        )
+    except Exception as e:
+        return (
+            jsonify({
+                'success': False,
+                'msg': 'Ocurrió un error inesperado al eliminar el usuario.',
+                'error': str(e)
+            }),
+            500
+        )

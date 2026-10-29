@@ -29,7 +29,10 @@ def test_get_user_by_id_returns_200_and_json(client):
 
 
 def test_delete_user_returns_200_and_json(client):
-    # Arrage: Configuración del caso de prueba
+    # Arrange: Configuración del caso de prueba
+    # 1. Se crean usuarios previos para asegurar que el ID 2 exista en la base de datos
+    client.post("/api/v1/users", json={'username': 'temp1', 'email': 'temp1@correo.co', 'password': '123'})
+    client.post("/api/v1/users", json={'username': 'temp2', 'email': 'temp2@correo.co', 'password': '123'})
     user_id: int = 2    # ID del usuario que se está probando
     path: str = f"/api/v1/users/{user_id}"       # Ruta del endpoint que se está probando    
     expected_response = {

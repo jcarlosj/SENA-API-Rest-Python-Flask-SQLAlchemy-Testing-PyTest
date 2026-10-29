@@ -13,10 +13,10 @@ Cada ítem cuenta con su respectiva casilla de verificación:
 | Métrica | Valor Actual |
 | :--- | :--- |
 | **Pruebas Totales Identificadas** | 62 |
-| **Pruebas Implementadas y Exitosas (`[x]`)** | 13 |
-| **Pruebas Pendientes (`[ ]`)** | 49 |
-| **Porcentaje de Cobertura de Código (`pytest-cov`)** | 69% |
-| **Estado de la Suite (`pytest`)** | 15 Passed (100% de las pruebas existentes pasan) |
+| **Pruebas Implementadas y Exitosas (`[x]`)** | 14 |
+| **Pruebas Pendientes (`[ ]`)** | 48 |
+| **Porcentaje de Cobertura de Código (`pytest-cov`)** | 71% |
+| **Estado de la Suite (`pytest`)** | 17 Passed (100% de las pruebas existentes pasan) |
 | **Motor de BD en Pruebas** | SQLite en memoria (`sqlite:///:memory:`) vía fixture en `tests/conftest.py` |
 
 ---
@@ -141,16 +141,11 @@ Garantiza el correcto registro de Blueprints, manejo de errores de rutas y Appli
 
 ### 3.5 Eliminar Usuario por ID (`DELETE /api/v1/users/<id>`)
 
-> [!NOTE]
-> **Estado de la funcionalidad en el código:**  
-> El controlador `delete_user_by_id_controller` está actualmente implementado como un **stub/mock** que responde confirmación estática sin interactuar con la base de datos ni invocar a `UserService`. La prueba unitaria existente valida únicamente este mock.
-
-#### Pruebas Unitarias (Estado Actual)
-- [x] **Respuesta simulada con status 200:** Verifica que `DELETE /api/v1/users/2` retorne HTTP 200 y mensaje de confirmación de eliminación simulado.  
+#### Pruebas de Integración y Servicio
+- [x] **Eliminación real y persistente en BD (200 OK):** Eliminar un usuario existente, verificar confirmación y verificar que ya no exista en base de datos ni exponga contraseña.  
+  *Referencia:* `tests/integration/test_users_integration.py::test_delete_user_with_valid_id_deletes_from_db_and_returns_200`
+- [x] **Respuesta con status 200 y confirmación básica:** Verifica respuesta HTTP 200 y mensaje de confirmación de eliminación.  
   *Referencia:* `tests/unit/test_users.py::test_delete_user_returns_200_and_json`
-
-#### Pruebas de Integración y Servicio (Pendientes de implementar funcionalidad completa)
-- [ ] **Eliminación real y persistente en BD (200 OK):** Eliminar un usuario existente, verificar confirmación y verificar que ya no exista en base de datos.
 - [ ] **Verificación de eliminación con consulta posterior (404):** Intentar un `GET /api/v1/users/<id>` posterior al borrado y verificar que responda 404.
 - [ ] **Eliminar usuario inexistente (404 Not Found):** Intentar eliminar un ID no existente y verificar respuesta 404 `USER_NOT_FOUND`.
 - [ ] **ID de usuario inválido en URL (404 Not Found):** Enviar ID alfanumérico en ruta y verificar rechazo.
@@ -245,12 +240,12 @@ Pruebas sobre la configuración de conexión y función de verificación ping.
 | **Usuarios: Crear (`POST /users`)** | Integración / Unitaria | 1 | 11 | 12 | Flujo exitoso cubierto; validaciones pendientes |
 | **Usuarios: Actualizar (`PUT /users/<id>`)** | Integración / Unitaria | 1 | 11 | 12 | Flujo exitoso cubierto; validaciones pendientes |
 | **Usuarios: Consultar ID (`GET /users/<id>`)** | Unitaria (Mock) / Integración | 1 | 4 | 5 | Mock cubierto; lógica real y BD pendiente |
-| **Usuarios: Eliminar (`DELETE /users/<id>`)** | Unitaria (Mock) / Integración | 1 | 5 | 6 | Mock cubierto; lógica real y BD pendiente |
+| **Usuarios: Eliminar (`DELETE /users/<id>`)** | Unitaria / Integración | 2 | 4 | 6 | Funcionalidad completa y persistente |
 | **Servicio de Usuarios (`UserService`)** | Unitaria (Mocks) | 0 | 14 | 14 | No existen pruebas unitarias puras del servicio |
 | **Modelo ORM (`User`)** | Unitaria / Integración | 0 | 10 | 10 | Cubierto indirectamente por integración |
 | **Excepciones (`exceptions.py`)** | Unitaria | 0 | 5 | 5 | Instanciación probada solo en flujos |
 | **Configuración MySQL (`mysql_config.py`)** | Unitaria | 0 | 4 | 4 | 57% de líneas cubiertas |
-| **TOTALES** | | **13** | **49** | **62** | **69% Cobertura Global** |
+| **TOTALES** | | **14** | **48** | **62** | **71% Cobertura Global** |
 
 ---
 

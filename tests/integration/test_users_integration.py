@@ -210,3 +210,106 @@ def test_update_user_with_valid_data_persists_in_db_and_returns_200(client):
     # Assert: Verificamos que no se retorne la contraseña NUNCA
     assert 'password' not in user_data
 
+
+# Test: Elimina un usuario existente con ID válido, confirma su eliminación en la BD y retorna 200
+def test_delete_user_with_valid_id_deletes_from_db_and_returns_200(client):
+    # Arrange: Configuración del caso de prueba
+    # 1. Creamos dos usuarios en la base de datos (uno a eliminar y otro para comprobar persistencia selectiva)
+    user_to_delete = {
+        'username': 'carlos',
+        'email': 'carlos.gomez@correo.co',
+        'password': 'password123',
+        'full_name': 'Carlos Gomez',
+        'role': 'user'
+    }
+    user_survivor = {
+        'username': 'laura',
+        'email': 'laura.torres@correo.co',
+        'password': 'password456',
+        'full_name': 'Laura Torres',
+        'role': 'admin'
+    }
+
+    create_del_resp = client.post("/api/v1/users", json=user_to_delete)
+    created_del_user = create_del_resp.get_json()['data']
+    user_id = created_del_user['user_id']
+
+    create_surv_resp = client.post("/api/v1/users", json=user_survivor)
+    survivor_user = create_surv_resp.get_json()['data']
+    survivor_id = survivor_user['user_id']
+
+    # 2. Definimos la ruta con el ID del usuario a eliminar y la respuesta esperada
+    path: str = f"/api/v1/users/{user_id}"
+    expected_response = {
+        'success': True,
+        'msg': f"Usuario con ID {user_id} eliminado correctamente",
+        'data': {
+            'username': user_to_delete['username'],
+            'email': user_to_delete['email'],
+            'full_name': user_to_delete['full_name'],
+            'role': user_to_delete['role'],
+            'user_id': user_id,
+            'created_at': ANY,
+            'updated_at': ANY
+        }
+    }
+
+    # Act: Realiza la petición HTTP DELETE a /api/v1/users/<id>
+    response = client.delete(path)
+    data = response.get_json()
+
+    # Assert: Verifica que la respuesta HTTP sea correcta
+    assert response.status_code == 200                  # Verifica que el código de estado sea 200 OK
+    assert data['success'] is True                      # Verifica que el estado sea success
+    assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
+    assert isinstance(data['data'], dict)               # Verifica que la respuesta de la propiedad data sea un diccionario
+    assert data is not None                             # Verifica que la respuesta no sea None
+    assert data == expected_response                    # Verifica que la respuesta coincida con la esperada
+
+    # Assert: Verificamos los datos retornados de la cabecera
+    assert data['success'] == expected_response['success']    # Verifica que el estado sea success
+    assert data['msg'] == expected_response['msg']            # Verifica que el mensaje sea el esperado
+
+    # Assert: Verificamos los datos del usuario eliminado
+    user_data = data['data']
+    assert user_data['username'] == user_to_delete['username']
+    assert user_data['email'] == user_to_delete['email']
+    assert user_data['full_name'] == user_to_delete['full_name']
+    assert user_data['role'] == user_to_delete['role']
+
+    # Assert: Verificamos los campos generados por la base de datos y sus tipos
+    assert user_data['user_id'] == user_id
+    assert isinstance(user_data['user_id'], int)
+    assert isinstance(user_data['username'], str)
+    assert isinstance(user_data['email'], str)
+    assert isinstance(user_data['full_name'], str)
+    assert isinstance(user_data['role'], str)
+    assert isinstance(user_data['created_at'], str)
+    assert isinstance(user_data['updated_at'], str)
+
+    # Assert: Verificamos que no se retorne la contraseña NUNCA
+    assert 'password' not in user_data
+
+    # Assert: Verificación de persistencia real en la base de datos
+    # 1. Una segunda petición DELETE al mismo ID debe responder 404 (ya no existe)
+    followup_delete = client.delete(path)
+    assert followup_delete.status_code == 404
+    followup_data = followup_delete.get_json()
+    assert followup_data['success'] is False
+    assert followup_data['error'] == 'USER_NOT_FOUND'
+
+    # 2. Consultar todos los usuarios y comprobar que el usuario eliminado no esté en la lista
+    get_all_response = client.get("/api/v1/users")
+    assert get_all_response.status_code == 200
+    all_users = get_all_response.get_json()['data']
+    remaining_ids = [u['user_id'] for u in all_users]
+    remaining_usernames = [u['username'] for u in all_users]
+
+    assert user_id not in remaining_ids
+    assert user_to_delete['username'] not in remaining_usernames
+
+    # 3. Comprobar que el otro usuario creado permanezca intacto en la base de datos
+    assert survivor_id in remaining_ids
+    assert len(all_users) == 1
+
+

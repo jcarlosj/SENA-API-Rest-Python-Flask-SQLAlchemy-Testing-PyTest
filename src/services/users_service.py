@@ -136,3 +136,27 @@ class UserService:
         except Exception as e:
             db.session.rollback()
             raise DatabaseError(f"Error al actualizar usuario: {str(e)}", 'DB_ERROR', {'error': str(e)})
+
+    @staticmethod
+    def delete_user(user_id: int) -> User:
+        """
+        Elimina un usuario del sistema por su ID
+        Retorna:
+            User: Instancia del usuario eliminado
+        Lanza:
+            NotFoundError: Si el usuario no existe
+            DatabaseError: Si ocurre un error al eliminar en base de datos
+        """
+        # 1. Verificar existencia
+        user = db.session.get(User, user_id)
+        if not user:
+            raise NotFoundError("Usuario no encontrado", 'USER_NOT_FOUND', {'user_id': user_id})
+
+        # 2. Eliminar registro y persistir cambios en BD
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            return user
+        except Exception as e:
+            db.session.rollback()
+            raise DatabaseError(f"Error al eliminar usuario: {str(e)}", 'DB_ERROR', {'error': str(e)})
