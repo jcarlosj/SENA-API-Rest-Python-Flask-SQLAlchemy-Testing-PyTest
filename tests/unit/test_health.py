@@ -1,3 +1,6 @@
+import pytest
+
+
 def test_health_checks_return_status_200(client):
     """Verifica que el endpoint /health responda con status HTTP 200 y el JSON esperado"""
     # 1. Arrange: Configuración del caso de prueba
@@ -46,3 +49,20 @@ def test_health_returns_expected_fields(client):
     assert isinstance(data, dict)                       # Verifica que la respuesta sea un diccionario
     assert set(data.keys()) == set(expected_fields)     # Verifica que los campos sean los esperados
     assert response.status_code == 200                  # Verifica que el código de estado sea 200
+
+
+@pytest.mark.parametrize(
+    "http_method", 
+    ["put", "delete", "patch", "post"]
+)
+def test_health_unsupported_methods_return_405(client, http_method):
+    """Verifica que peticiones con métodos no soportados (PUT, DELETE, PATCH, POST) sobre /health retornen HTTP 405 Method Not Allowed."""
+    # 1. Arrange: Configuración del caso de prueba
+    path: str = "/health"
+
+    # 2. Act: Realiza la petición con el método correspondiente
+    client_method = getattr(client, http_method)        # getattr() Obtiene el método HTTP correspondiente al string pasado como argumento
+    response = client_method(path)                      # Realiza la petición HTTP
+
+    # 3. Assert: Verifica que la respuesta sea 405 Method Not Allowed
+    assert response.status_code == 405                  # Verifica que el código de estado sea 405
