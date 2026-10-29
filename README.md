@@ -113,6 +113,9 @@ Al arrancar, el servidor verificará la conexión a la base de datos MySQL y mos
 
 El proyecto cuenta con configuración predefinida en [pytest.ini](pytest.ini).
 
+> [!NOTE]
+> Puedes consultar el [Checklist Exhaustivo de Pruebas Unitarias y de Integración](docs/testing_checklist.md) para revisar el inventario completo de pruebas implementadas, pendientes y cobertura por módulo.
+
 ### Ejecutar todas las pruebas:
 ```bash
 pytest -v
@@ -139,7 +142,8 @@ xdg-open htmlcov/index.html
 ```text
 BackEnd/
 ├── docs/                      # Guías de configuración y arquitectura
-│   └── mysql_setup_guide.md   # Guía paso a paso para configurar MySQL
+│   ├── mysql_setup_guide.md   # Guía paso a paso para configurar MySQL
+│   └── testing_checklist.md   # Checklist de pruebas unitarias y de integración
 ├── src/                       # Código fuente de la aplicación
 │   ├── config/                # Módulos de configuración (MySQL, variables .env)
 │   ├── controllers/           # Lógica de peticiones y respuestas HTTP
